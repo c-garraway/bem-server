@@ -4,7 +4,7 @@ const { checkAuthenticated, checkNotAuthenticated } = require('../utilities/util
 
 const usersRouter = express.Router();
 
-usersRouter.get('/register', checkAuthenticated, (req, res) => {
+/* usersRouter.get('/register', checkAuthenticated, (req, res) => {
     res.render('register');
 });
 
@@ -19,7 +19,7 @@ usersRouter.get('/dashboard', checkNotAuthenticated, (req, res) => {
         user: (typeof name === 'string') ? req.user.name : req.user.displayName,
         image: userImage?.picture ? userImage.picture : '',
     });
-});
+}); */
 
 usersRouter.post('/logout', (req, res) => {
     /* req.flash('success_msg', 'You have logged out');
@@ -30,8 +30,8 @@ usersRouter.post('/logout', (req, res) => {
         if (err) { 
             return next(err); 
         };
-        req.flash('success_msg', 'You have logged out');
-        res.redirect('/users/login');
+        //req.flash('success_msg', 'You have logged out');
+        res.send({message: 'You have logged out'});
     }); 
 });
 
@@ -59,7 +59,7 @@ usersRouter.post('/register', async (req, res) => {
     }
 
     if(errors.length > 0) {
-        res.render('register', { errors })
+        res.send({ errors })
     } else {
         //Form validation has passed
 
@@ -77,7 +77,7 @@ usersRouter.post('/register', async (req, res) => {
 
                 if(results.rows.length > 0) {
                     errors.push({message: 'Email already registered'});
-                    res.render('register', { errors })
+                    res.send({ errors })
                 } else {
                     pool.query(
                         'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, password', [name, email, hashedPassword], (err, results) => {
@@ -85,8 +85,8 @@ usersRouter.post('/register', async (req, res) => {
                                 throw err;
                             }
                             console.log(results.rows);
-                            req.flash('success_msg', 'You are now registered. Please log in.');
-                            res.redirect('/users/login');
+                            //req.flash('success_msg', 'You are now registered. Please log in.');
+                            res.send({message: 'You are now registered'});
                         }
                     )
                 }
@@ -97,9 +97,40 @@ usersRouter.post('/register', async (req, res) => {
 });
 
 usersRouter.post('/login', passport.authenticate('local', {
-    successRedirect: '/users/dashboard',
-    failureRedirect: '/users/login',
-    failureFlash: true
-}));
+    //successMessage: 'Logged in',
+    //failureMessage: 'Not logged in'
+    //successRedirect: '/users/dashboard',
+    //failureRedirect: '/users/login',
+    //failureFlash: true
+}), (req, res) =>{
+    const {email, password} = req.body;
+    pool.query(
+        'SELECT * FROM users WHERE email = $1', [email], (err, results) => {
+            if (err) {
+                throw err;
+            }
+            console.log(results.rows);
+
+            if(results.rows.length > 0) {
+                const user = results.rows[0];
+
+                bcrypt.compare(password, user.password, (err, isMatch) => {
+                    if(err) {
+                        throw err
+                    }
+                    if(isMatch) {
+                        return done(null, user);
+                    } else {
+                        return done(null, false, {message: 'Password is not correct'});
+                    }
+                });
+
+            } else {
+                return done(null, false, {message: 'Email is not registered'});
+            }
+        } 
+    );
+    res.send({message: 'Success'})
+});
 
 module.exports = usersRouter;

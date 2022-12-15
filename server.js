@@ -11,12 +11,13 @@ const LocalStrategy = require('passport-local').Strategy;
 const PORT = process.env.EXPRESS_PORT || 4000;
 
 const authenticateLocalUser = (email, password, done) => {
+    
     pool.query(
         'SELECT * FROM users WHERE email = $1', [email], (err, results) => {
             if (err) {
                 throw err;
             }
-            //console.log(results.rows);
+            console.log(results.rows);
 
             if(results.rows.length > 0) {
                 const user = results.rows[0];
@@ -69,7 +70,7 @@ passport.deserializeUser((user, done) => {
 });
 
 
-app.set('view engine', 'ejs');
+//app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: false}));
 
 const conObject = {

@@ -34,15 +34,15 @@ googleRouter.get('/callback',
                             if(err) {
                                 throw err;
                             }
-
-                            res.redirect('/users/dashboard');
+                            res.send({message: 'added user to database'})
+                            res.send({googleUser});
 
                         }
                     );
 
                 } else {
                     //console.log('user is in the database')
-                    res.redirect('/users/dashboard');
+                    res.send({googleUser});
 
                 }
             }
