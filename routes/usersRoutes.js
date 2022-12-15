@@ -1,6 +1,8 @@
 const express = require('express');
 const passport = require('passport');
 const { checkAuthenticated, checkNotAuthenticated } = require('../utilities/utility')
+const { pool } = require('../config/dbConfig')
+const bcrypt = require('bcrypt');
 
 const usersRouter = express.Router();
 
@@ -97,40 +99,15 @@ usersRouter.post('/register', async (req, res) => {
 });
 
 usersRouter.post('/login', passport.authenticate('local', {
-    //successMessage: 'Logged in',
-    //failureMessage: 'Not logged in'
-    //successRedirect: '/users/dashboard',
-    //failureRedirect: '/users/login',
-    //failureFlash: true
-}), (req, res) =>{
-    const {email, password} = req.body;
-    pool.query(
-        'SELECT * FROM users WHERE email = $1', [email], (err, results) => {
-            if (err) {
-                throw err;
-            }
-            console.log(results.rows);
+    failureMessage: 'Failed Authentication'
 
-            if(results.rows.length > 0) {
-                const user = results.rows[0];
-
-                bcrypt.compare(password, user.password, (err, isMatch) => {
-                    if(err) {
-                        throw err
-                    }
-                    if(isMatch) {
-                        return done(null, user);
-                    } else {
-                        return done(null, false, {message: 'Password is not correct'});
-                    }
-                });
-
-            } else {
-                return done(null, false, {message: 'Email is not registered'});
-            }
-        } 
-    );
-    res.send({message: 'Success'})
+}), (req, res) =>{ 
+    const account = (req.session.passport.user)
+    const response = {
+        name: account.name,
+        email: account.email
+    }
+    res.send(response)
 });
 
 module.exports = usersRouter;

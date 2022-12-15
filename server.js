@@ -18,6 +18,7 @@ const authenticateLocalUser = (email, password, done) => {
                 throw err;
             }
             console.log(results.rows);
+            console.log(email, password)
 
             if(results.rows.length > 0) {
                 const user = results.rows[0];
@@ -72,6 +73,8 @@ passport.deserializeUser((user, done) => {
 
 //app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: false}));
+app.use(express.json())
+
 
 const conObject = {
     connectionString,
