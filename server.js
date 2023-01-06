@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+//const cookieSession = require('cookie-session');
 const { pool, connectionString } = require('./config/dbConfig')
 const bcrypt = require('bcrypt');
 const session = require('express-session');
@@ -7,6 +8,8 @@ const flash = require('express-flash');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
+const cors = require('cors');
+const morgan = require('morgan');
 
 const PORT = process.env.EXPRESS_PORT || 4000;
 
@@ -49,6 +52,8 @@ passport.use(new GoogleStrategy({
     function(accessToken, refreshToken, profile, cb) {
         console.log(profile);
         cb(null, profile);
+
+        //save user at this point
 }
 ));
 
@@ -73,9 +78,14 @@ passport.deserializeUser((user, done) => {
 
 //app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: false}));
-app.use(express.json())
-
-
+app.use(express.json());
+app.use(cors());
+app.use(morgan('tiny'))
+/* app.use(cookieSession({
+    name: 'session',
+    keys: ['test'],
+    maxAge: 24 * 60 * 60 * 1000
+})) */
 const conObject = {
     connectionString,
     //ssl: { rejectUnauthorized: false }

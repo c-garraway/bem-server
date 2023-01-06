@@ -107,6 +107,7 @@ usersRouter.post('/login', passport.authenticate('local', {
         name: account.name,
         email: account.email
     }
+
     res.send(response)
 });
 
