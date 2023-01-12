@@ -24,40 +24,38 @@ usersRouter.get('/dashboard', checkNotAuthenticated, (req, res) => {
 }); */
 
 usersRouter.post('/logout', (req, res) => {
+    req.session.destroy();
+    res.status(200).json({message: 'You have logged out'});
+
+    //res.redirect("http://localhost:3000");
+
     /* req.flash('success_msg', 'You have logged out');
     req.session.destroy();
-    res.redirect('/users/login'); */
+    res.redirect("http://localhost:3000"); */
 
-    req.logout(function(err) {
+    /* req.logout(function(err) {
         if (err) { 
             return next(err); 
         };
-        //req.flash('success_msg', 'You have logged out');
         res.send({message: 'You have logged out'});
-    }); 
+    }); */ 
 });
 
 usersRouter.post('/register', async (req, res) => {
-    let { name, email, password, password2 } = req.body;
-    console.log({
-        name,
-        email,
-        password,
-        password2
-    });
+    let { email, password, password2 } = req.body;
 
     let errors = [];
 
-    if(!name || !email || !password || !password2) {
-        errors.push({message: 'Please enter all fields'});
+    if(!email || !password || !password2) {
+        errors.push('Please enter all fields! ');
     };
 
     if(password.length < 6) {
-        errors.push({message: 'Password should be at least 6 characters'});
+        errors.push('Password should be at least 6 characters! ');
     };
 
     if(password !== password2) {
-        errors.push({message: 'Passwords do not match'});
+        errors.push('Passwords do not match! ');
     }
 
     if(errors.length > 0) {
@@ -78,17 +76,17 @@ usersRouter.post('/register', async (req, res) => {
                 console.log(results.rows);
 
                 if(results.rows.length > 0) {
-                    errors.push({message: 'Email already registered'});
+                    errors.push('Email already registered! ');
                     res.send({ errors })
                 } else {
                     pool.query(
-                        'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, password', [name, email, hashedPassword], (err, results) => {
+                        'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, password', [email, hashedPassword], (err, results) => {
                             if(err) {
                                 throw err;
                             }
                             console.log(results.rows);
                             //req.flash('success_msg', 'You are now registered. Please log in.');
-                            res.send({message: 'You are now registered'});
+                            res.send({email: email});
                         }
                     )
                 }
@@ -98,17 +96,74 @@ usersRouter.post('/register', async (req, res) => {
 
 });
 
-usersRouter.post('/login', passport.authenticate('local', {
-    failureMessage: 'Failed Authentication'
+usersRouter.put('/addProfile', async (req, res) => {
+    let { email, firstName, lastName, companyName } = req.body;
+    console.log({
+        email,
 
-}), (req, res) =>{ 
-    const account = (req.session.passport.user)
-    const response = {
-        name: account.name,
-        email: account.email
+    });
+
+    let errors = [];
+
+    if(!email || !firstName || !lastName || !companyName) {
+        errors.push('Please enter all fields. ');
+    };
+
+    if(errors.length > 0) {
+        res.send({ errors })
+    } else {
+        //Form validation has passed
+
+        pool.query(
+            'SELECT * FROM users WHERE email = $1', [email], 
+            (err, results) => {
+                if(err) {
+                    throw err;
+                }
+
+
+
+                 else {
+                    //console.log(results.rows);
+
+                    pool.query(
+                        'UPDATE users SET firstname = $1, lastname = $2, companyname = $3 WHERE email = $4 RETURNING *', [firstName, lastName, companyName, email], (err, results) => {
+                            if(err) {
+                                throw err;
+                            }
+                            const user = results.rows;
+                            //req.flash('success_msg', 'You are now registered. Please log in.');
+                            res.send({user});
+                        }
+                    )
+                }
+            }
+        )
     }
 
+});
+
+//TODO: UPDATE PROFILE ROUTE REQUIRED!      
+
+usersRouter.post('/login', passport.authenticate('local',  { failureRedirect: "loginfail" }), (req, res) =>{ 
+    
+
+    const account = (req.session.passport.user)
+    console.log(account)
+
+    const response = {
+        id: account.id,
+        email: account.email,
+        firstName: account.firstname,
+        lastName: account.lastname,
+        companyName: account.companyname,
+    }
+    console.log(response)
     res.send(response)
+});
+
+usersRouter.get('/loginfail', function(req, res){
+    res.status(401).json({message: 'Invalid Credentials'});
 });
 
 module.exports = usersRouter;

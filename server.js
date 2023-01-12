@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-//const cookieSession = require('cookie-session');
+const cookieSession = require('cookie-session');
 const { pool, connectionString } = require('./config/dbConfig')
 const bcrypt = require('bcrypt');
 const session = require('express-session');
@@ -20,8 +20,8 @@ const authenticateLocalUser = (email, password, done) => {
             if (err) {
                 throw err;
             }
-            console.log(results.rows);
-            console.log(email, password)
+            //console.log('DB:'+results.rows);
+            //console.log(email, password)
 
             if(results.rows.length > 0) {
                 const user = results.rows[0];
@@ -50,11 +50,11 @@ passport.use(new GoogleStrategy({
     callbackURL: process.env.GOOGLE_CALLBACK_URL
     },
     function(accessToken, refreshToken, profile, cb) {
-        console.log(profile);
+        //console.log(profile);
         cb(null, profile);
 
         //save user at this point
-}
+    }
 ));
 
 passport.use(
@@ -79,7 +79,11 @@ passport.deserializeUser((user, done) => {
 //app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:3000",
+    methods: "GET, POST, PUT, DELETE",
+    credentials: true,
+}));
 app.use(morgan('tiny'))
 /* app.use(cookieSession({
     name: 'session',
@@ -116,6 +120,10 @@ app.use('/google', googleRouter);
 
 const usersRouter = require('./routes/usersRoutes');
 app.use('/users', usersRouter);
+
+const entityRouter = require('./routes/entityRoutes');
+app.use('/entities', entityRouter);
+
 
 app.get('/', (req, res) => {
     res.render('index');
