@@ -124,6 +124,14 @@ app.use('/users', usersRouter);
 const entityRouter = require('./routes/entityRoutes');
 app.use('/entities', entityRouter);
 
+const dORouter = require('./routes/doRoutes');
+app.use('/do', dORouter);
+
+const bnRouter = require('./routes/bnRoutes');
+app.use('/bn', bnRouter);
+
+const bnFilingsRouter = require('./routes/bnFilingsRoutes');
+app.use('/bnf', bnFilingsRouter);
 
 app.get('/', (req, res) => {
     res.render('index');
