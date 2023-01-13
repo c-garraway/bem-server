@@ -33,11 +33,11 @@ dORouter.get('/:id', async (req, res) => {
         )
       }            
     )
-    res.status(200).send(dOs);
+    res.status(200).json(dOs);
       
   } catch (error) {
     console.error(error);
-    res.status(403).send({message: error.detail});
+    res.status(500).json({message: error});
   }
 });
 
@@ -50,7 +50,7 @@ dORouter.put('/', async (req, res) => {
     );
 
     if (data.rows.length === 0) {
-      return res.sendStatus(404);
+      return res.status(404).json({message: 'D&O\'s Not Found'});
     };
 
     const rawDO = data.rows[0];
@@ -72,11 +72,11 @@ dORouter.put('/', async (req, res) => {
 
     console.log(dO);
 
-    res.status(200).send(dO);
+    res.status(200).json(dO);
       
   } catch (error) {
     console.error(error);
-    res.status(403).send({message: error.detail});
+    res.status(500).json({message: error});
   }
 });
 
@@ -89,11 +89,11 @@ dORouter.post('/', async (req, res) => {
     );
 
     if (data.rows.length === 0) {
-      return res.sendStatus(400);
+      return res.status(400);
     };
 
     const rawDO = data.rows[0];
-    
+
     const dO = {
       id: rawDO.id,
       entity: rawDO.entity,
@@ -111,7 +111,7 @@ dORouter.post('/', async (req, res) => {
       
   } catch (error) {
     console.error(error);
-    res.status(403).send({message: error.detail});
+    res.status(500).json({message: error});
   }
 });
 

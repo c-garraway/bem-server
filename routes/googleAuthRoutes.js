@@ -43,7 +43,7 @@ googleRouter.get('/getUser', async (req, res) => {
             
         } catch (error) {
             console.error(error);
-            res.status(403).send({message: error.detail});
+            res.status(500).send({message: error});
         }
     }
 });

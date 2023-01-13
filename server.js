@@ -133,10 +133,16 @@ app.use('/bn', bnRouter);
 const bnFilingsRouter = require('./routes/bnFilingsRoutes');
 app.use('/bnf', bnFilingsRouter);
 
-app.get('/', (req, res) => {
+const cFilingsRouter = require('./routes/cFilingsRoutes');
+app.use('/cf', cFilingsRouter);
+
+const cjRouter = require('./routes/cjRoutes');
+app.use('/cj', cjRouter);
+
+/* app.get('/', (req, res) => {
     res.render('index');
 });
-
+ */
 app.listen(PORT, ()=>{
     console.log(`Server running on port ${PORT}`)
 });
