@@ -29,11 +29,11 @@ cFilingsRouter.get('/:id', async (req, res) => {
         )
       }            
     )
-    res.status(200).send(corporateFilings);
+    res.status(200).json(corporateFilings);
       
   } catch (error) {
     console.error(error);
-    res.status(403).send({message: error.detail});
+    res.status(500).json({message: error});
   }
 });
 
@@ -46,7 +46,7 @@ cFilingsRouter.put('/', async (req, res) => {
     );
 
     if (data.rows.length === 0) {
-        return res.status(404).json({message: 'Corporate Filings Not Found'});
+        return res.status(404).json({message: 'Corporate Filing Not Found'});
     };
 
     const CF = data.rows[0];
@@ -64,11 +64,11 @@ cFilingsRouter.put('/', async (req, res) => {
 
     console.log(updatedCorporateFiling);
 
-    res.status(200).send(updatedCorporateFiling);
+    res.status(200).json(updatedCorporateFiling);
       
   } catch (error) {
     console.error(error);
-    res.status(403).send({message: error.detail});
+    res.status(500).json({message: error});
   }
 });
 
@@ -99,13 +99,12 @@ cFilingsRouter.post('/', async (req, res) => {
 
     console.log(newCorporateFiling);
 
-    res.status(200).send(newCorporateFiling);
+    res.status(200).json(newCorporateFiling);
       
   } catch (error) {
     console.error(error);
-    res.status(403).send({message: error.detail});
+    res.status(500).json({message: error});
   }
 });
-
 
 module.exports = cFilingsRouter;

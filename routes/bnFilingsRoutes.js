@@ -30,11 +30,11 @@ bnFilingsRouter.get('/:id', async (req, res) => {
         )
       }            
     )
-    res.status(200).send(businessNameFilings);
+    res.status(200).json(businessNameFilings);
       
   } catch (error) {
     console.error(error);
-    res.status(403).send({message: error.detail});
+    res.status(500).json({message: error});
   }
 });
 
@@ -47,7 +47,7 @@ bnFilingsRouter.put('/', async (req, res) => {
     );
 
     if (data.rows.length === 0) {
-      return res.sendStatus(404);
+      return res.status(404).json({message: 'Business Name Filing Not Found'});
     };
 
     const BNF = data.rows[0];
@@ -66,11 +66,11 @@ bnFilingsRouter.put('/', async (req, res) => {
 
     console.log(updatedBusinessNameFiling);
 
-    res.status(200).send(updatedBusinessNameFiling);
+    res.status(200).json(updatedBusinessNameFiling);
       
   } catch (error) {
     console.error(error);
-    res.status(403).send({message: error.detail});
+    res.status(500).json({message: error});
   }
 });
 
@@ -83,7 +83,7 @@ bnFilingsRouter.post('/', async (req, res) => {
     );
 
     if (data.rows.length === 0) {
-      return res.sendStatus(400);
+      return res.status(400).json({message: 'Bad Request'});
     };
 
     const BNF = data.rows[0];
@@ -102,13 +102,12 @@ bnFilingsRouter.post('/', async (req, res) => {
 
     console.log(newBusinessNameFiling);
 
-    res.status(200).send(newBusinessNameFiling);
+    res.status(200).json(newBusinessNameFiling);
       
   } catch (error) {
     console.error(error);
-    res.status(403).send({message: error.detail});
+    res.status(500).json({message: error});
   }
 });
-
 
 module.exports = bnFilingsRouter;

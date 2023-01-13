@@ -31,11 +31,11 @@ bnRouter.get('/:id', async (req, res) => {
         )
       }            
     )
-    res.status(200).send(businessNames);
+    res.status(200).json(businessNames);
       
   } catch (error) {
     console.error(error);
-    res.status(403).send({message: error.detail});
+    res.status(500).json({message: error});
   }
 });
 
@@ -48,7 +48,8 @@ bnRouter.put('/', async (req, res) => {
     );
 
     if (data.rows.length === 0) {
-      return res.sendStatus(404);
+      return res.status(404).json({message: 'Business Name Not Found'});
+
     };
 
     const BN = data.rows[0];
@@ -68,11 +69,11 @@ bnRouter.put('/', async (req, res) => {
 
     console.log(updatedBusinessName);
 
-    res.status(200).send(updatedBusinessName);
+    res.status(200).json(updatedBusinessName);
       
   } catch (error) {
     console.error(error);
-    res.status(403).send({message: error.detail});
+    res.status(500).json({message: error});
   }
 });
 
@@ -85,7 +86,7 @@ bnRouter.post('/', async (req, res) => {
     );
 
     if (data.rows.length === 0) {
-      return res.sendStatus(400);
+      return res.status(400).json({message: 'Bad Request'});
     };
 
     const BN = data.rows[0];
@@ -105,13 +106,12 @@ bnRouter.post('/', async (req, res) => {
 
     console.log(newBusinessName);
 
-    res.status(200).send(newBusinessName);
+    res.status(200).json(newBusinessName);
       
   } catch (error) {
     console.error(error);
-    res.status(403).send({message: error.detail});
+    res.status(500).json({message: error});
   }
 });
-
 
 module.exports = bnRouter;

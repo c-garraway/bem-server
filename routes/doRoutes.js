@@ -50,14 +50,14 @@ dORouter.put('/', async (req, res) => {
     );
 
     if (data.rows.length === 0) {
-      return res.status(404).json({message: 'D&O\'s Not Found'});
+      return res.status(404).json({message: 'D&O Not Found'});
     };
 
     const rawDO = data.rows[0];
 
     console.log(rawDO);
 
-    const dO = {
+    const updatedDO = {
       id: rawDO.id,
       entity: rawDO.entity,
       name: rawDO.name,
@@ -70,9 +70,9 @@ dORouter.put('/', async (req, res) => {
       endDate: rawDO.end_date
     }
 
-    console.log(dO);
+    console.log(updatedDO);
 
-    res.status(200).json(dO);
+    res.status(200).json(updatedDO);
       
   } catch (error) {
     console.error(error);
@@ -89,12 +89,12 @@ dORouter.post('/', async (req, res) => {
     );
 
     if (data.rows.length === 0) {
-      return res.status(400);
+      return res.status(400).json({message: 'Bad Request'});
     };
 
     const rawDO = data.rows[0];
 
-    const dO = {
+    const addedDO = {
       id: rawDO.id,
       entity: rawDO.entity,
       name: rawDO.name,
@@ -107,13 +107,12 @@ dORouter.post('/', async (req, res) => {
       endDate: rawDO.end_date
     }
 
-    res.status(200).send(dO);
+    res.status(200).json(addedDO);
       
   } catch (error) {
     console.error(error);
     res.status(500).json({message: error});
   }
 });
-
 
 module.exports = dORouter;

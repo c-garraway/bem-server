@@ -33,7 +33,7 @@ cjRouter.get('/:id', async (req, res) => {
       
   } catch (error) {
     console.error(error);
-    res.status(403).json({message: error.detail});
+    res.status(500).json({message: error});
   }
 });
 
@@ -46,7 +46,7 @@ cjRouter.put('/', async (req, res) => {
     );
 
     if (data.rows.length === 0) {
-        return res.status(404).json({message: 'Corporate Jurisdictions Not Found'});
+        return res.status(404).json({message: 'Corporate Jurisdiction Not Found'});
     };
 
     const CJ = data.rows[0];
@@ -68,7 +68,7 @@ cjRouter.put('/', async (req, res) => {
       
   } catch (error) {
     console.error(error);
-    res.status(403).json({message: error.detail});
+    res.status(500).json({message: error});
   }
 });
 
@@ -103,9 +103,8 @@ cjRouter.post('/', async (req, res) => {
       
   } catch (error) {
     console.error(error);
-    res.status(403).json({message: error.detail});
+    res.status(500).json({message: error});
   }
 });
-
 
 module.exports = cjRouter;
