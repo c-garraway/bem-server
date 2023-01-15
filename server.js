@@ -9,7 +9,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 const cors = require('cors');
-const morgan = require('morgan');
+//const morgan = require('morgan');
 
 const PORT = process.env.EXPRESS_PORT || 4000;
 
@@ -76,11 +76,11 @@ passport.deserializeUser((user, done) => {
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: process.env.CORS_ORIGIN,
     methods: "GET, POST, PUT, DELETE",
     credentials: true,
 }));
-app.use(morgan('tiny'))
+//app.use(morgan('tiny'))
 /* app.use(cookieSession({
     name: 'session',
     keys: ['test'],
