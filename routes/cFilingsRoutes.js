@@ -51,7 +51,7 @@ cFilingsRouter.put('/', async (req, res) => {
 
     const CF = data.rows[0];
 
-    console.log(CF);
+    //console.log(CF);
 
     const updatedCorporateFiling = {
         id: CF.id,
@@ -62,7 +62,7 @@ cFilingsRouter.put('/', async (req, res) => {
         confirmation: CF.confirmation
     }
 
-    console.log(updatedCorporateFiling);
+    //console.log(updatedCorporateFiling);
 
     res.status(200).json(updatedCorporateFiling);
       
@@ -86,7 +86,7 @@ cFilingsRouter.post('/', async (req, res) => {
 
     const CF = data.rows[0];
 
-    console.log(CF);
+    //console.log(CF);
 
     const newCorporateFiling = {
         id: CF.id,
@@ -97,7 +97,7 @@ cFilingsRouter.post('/', async (req, res) => {
         confirmation: CF.confirmation
     }
 
-    console.log(newCorporateFiling);
+    //console.log(newCorporateFiling);
 
     res.status(200).json(newCorporateFiling);
       

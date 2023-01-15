@@ -55,7 +55,7 @@ dORouter.put('/', async (req, res) => {
 
     const rawDO = data.rows[0];
 
-    console.log(rawDO);
+    //console.log(rawDO);
 
     const updatedDO = {
       id: rawDO.id,
@@ -70,7 +70,7 @@ dORouter.put('/', async (req, res) => {
       endDate: rawDO.end_date
     }
 
-    console.log(updatedDO);
+    //console.log(updatedDO);
 
     res.status(200).json(updatedDO);
       

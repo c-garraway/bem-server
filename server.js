@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const cookieSession = require('cookie-session');
+//const cookieSession = require('cookie-session');
 const { pool, connectionString } = require('./config/dbConfig')
 const bcrypt = require('bcrypt');
 const session = require('express-session');
@@ -20,8 +20,6 @@ const authenticateLocalUser = (email, password, done) => {
             if (err) {
                 throw err;
             }
-            //console.log('DB:'+results.rows);
-            //console.log(email, password)
 
             if(results.rows.length > 0) {
                 const user = results.rows[0];
@@ -75,8 +73,6 @@ passport.deserializeUser((user, done) => {
     done(null, user)
 });
 
-
-//app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use(cors({
@@ -108,7 +104,6 @@ app.use(session({
         sameSite: false,
         maxAge: 24 * 60 * 60 * 1000
      } // 24 hours
-    // Insert express-session options here
 }));
 
 app.use(passport.initialize());
@@ -139,10 +134,6 @@ app.use('/cf', cFilingsRouter);
 const cjRouter = require('./routes/cjRoutes');
 app.use('/cj', cjRouter);
 
-/* app.get('/', (req, res) => {
-    res.render('index');
-});
- */
 app.listen(PORT, ()=>{
     console.log(`Server running on port ${PORT}`)
 });

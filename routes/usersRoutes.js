@@ -6,39 +6,34 @@ const bcrypt = require('bcrypt');
 
 const usersRouter = express.Router();
 
-/* usersRouter.get('/register', checkAuthenticated, (req, res) => {
-    res.render('register');
-});
 
-usersRouter.get('/login', checkAuthenticated, (req, res) => {
-    res.render('login');
-});
+//Not currently used
+usersRouter.get('/getUser', async (req, res) => {
+    const user = req.user;
 
-usersRouter.get('/dashboard', checkNotAuthenticated, (req, res) => {
-    const name = req.user.name;
-    const userImage = req.user._json;
-    res.render('dashboard', {
-        user: (typeof name === 'string') ? req.user.name : req.user.displayName,
-        image: userImage?.picture ? userImage.picture : '',
-    });
-}); */
+    //console.log(req);
+    if(req.user) {
+        try {
+            const data = await pool.query('SELECT id, email, firstname, lastname, companyname, avatar FROM users WHERE email = $1', [email]); 
+        
+            if (data.rows.length === 0) {
+            return res.status(404).json({message: 'Entity Not Found'});
+            };
+
+            const user = data.rows[0];
+        
+            res.status(200).send(user);
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({message: error});
+        }
+    }
+});
 
 usersRouter.post('/logout', (req, res) => {
     req.session.destroy();
     res.status(200).json({message: 'You have logged out'});
-
-    //res.redirect("http://localhost:3000");
-
-    /* req.flash('success_msg', 'You have logged out');
-    req.session.destroy();
-    res.redirect("http://localhost:3000"); */
-
-    /* req.logout(function(err) {
-        if (err) { 
-            return next(err); 
-        };
-        res.send({message: 'You have logged out'});
-    }); */ 
 });
 
 usersRouter.post('/register', async (req, res) => {
@@ -64,7 +59,7 @@ usersRouter.post('/register', async (req, res) => {
         //Form validation has passed
 
         let hashedPassword = await bcrypt.hash(password, 10);
-        console.log(hashedPassword);
+        //console.log(hashedPassword);
 
         pool.query(
             'SELECT * FROM users WHERE email = $1', [email], 
@@ -73,7 +68,7 @@ usersRouter.post('/register', async (req, res) => {
                     throw err;
                 }
 
-                console.log(results.rows);
+                //console.log(results.rows);
 
                 if(results.rows.length > 0) {
                     errors.push('Email already registered! ');
@@ -84,8 +79,7 @@ usersRouter.post('/register', async (req, res) => {
                             if(err) {
                                 throw err;
                             }
-                            console.log(results.rows);
-                            //req.flash('success_msg', 'You are now registered. Please log in.');
+                            //console.log(results.rows);
                             res.send({email: email});
                         }
                     )
@@ -98,10 +92,6 @@ usersRouter.post('/register', async (req, res) => {
 
 usersRouter.put('/addProfile', async (req, res) => {
     let { email, firstName, lastName, companyName } = req.body;
-    console.log({
-        email,
-
-    });
 
     let errors = [];
 
@@ -132,7 +122,6 @@ usersRouter.put('/addProfile', async (req, res) => {
                                 throw err;
                             }
                             const user = results.rows;
-                            //req.flash('success_msg', 'You are now registered. Please log in.');
                             res.send({user});
                         }
                     )
@@ -143,13 +132,10 @@ usersRouter.put('/addProfile', async (req, res) => {
 
 });
 
-//TODO: UPDATE PROFILE ROUTE REQUIRED!      
-
 usersRouter.post('/login', passport.authenticate('local',  { failureRedirect: "loginfail" }), (req, res) =>{ 
-    
 
     const account = (req.session.passport.user)
-    console.log(account)
+    //console.log(account)
 
     const response = {
         id: account.id,
@@ -158,7 +144,7 @@ usersRouter.post('/login', passport.authenticate('local',  { failureRedirect: "l
         lastName: account.lastname,
         companyName: account.companyname,
     }
-    console.log(response)
+    //console.log(response)
     res.send(response)
 });
 

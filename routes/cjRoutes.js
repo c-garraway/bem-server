@@ -51,7 +51,7 @@ cjRouter.put('/', async (req, res) => {
 
     const CJ = data.rows[0];
 
-    console.log(CJ);
+    //console.log(CJ);
 
     const updatedCorporateJurisdiction = {
         id: CJ.id,
@@ -62,7 +62,7 @@ cjRouter.put('/', async (req, res) => {
         endDate: CJ.end_date
     }
 
-    console.log(updatedCorporateJurisdiction);
+    //console.log(updatedCorporateJurisdiction);
 
     res.status(200).json(updatedCorporateJurisdiction);
       
@@ -86,7 +86,7 @@ cjRouter.post('/', async (req, res) => {
 
     const CJ = data.rows[0];
 
-    console.log(CJ);
+    //console.log(CJ);
 
     const newCorporateJurisdiction = {
         id: CJ.id,
@@ -97,7 +97,7 @@ cjRouter.post('/', async (req, res) => {
         endDate: CJ.end_date
     }
 
-    console.log(newCorporateJurisdiction);
+    //console.log(newCorporateJurisdiction);
 
     res.status(200).json(newCorporateJurisdiction);
       

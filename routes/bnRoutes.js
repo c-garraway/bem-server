@@ -54,7 +54,7 @@ bnRouter.put('/', async (req, res) => {
 
     const BN = data.rows[0];
 
-    console.log(BN);
+    //console.log(BN);
 
     const updatedBusinessName = {
       id: BN.id,
@@ -67,7 +67,7 @@ bnRouter.put('/', async (req, res) => {
       closeDate: BN.close_date
     }
 
-    console.log(updatedBusinessName);
+    //console.log(updatedBusinessName);
 
     res.status(200).json(updatedBusinessName);
       
@@ -91,7 +91,7 @@ bnRouter.post('/', async (req, res) => {
 
     const BN = data.rows[0];
 
-    console.log(BN);
+    //console.log(BN);
 
     const newBusinessName = {
       id: BN.id,
@@ -104,7 +104,7 @@ bnRouter.post('/', async (req, res) => {
       closeDate: BN.close_date
     }
 
-    console.log(newBusinessName);
+    //console.log(newBusinessName);
 
     res.status(200).json(newBusinessName);
       

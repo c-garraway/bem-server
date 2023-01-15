@@ -52,7 +52,7 @@ bnFilingsRouter.put('/', async (req, res) => {
 
     const BNF = data.rows[0];
 
-    console.log(BNF);
+    //console.log(BNF);
 
     const updatedBusinessNameFiling = {
       id: BNF.id,
@@ -64,7 +64,7 @@ bnFilingsRouter.put('/', async (req, res) => {
       confirmation: BNF.confirmation
     }
 
-    console.log(updatedBusinessNameFiling);
+    //console.log(updatedBusinessNameFiling);
 
     res.status(200).json(updatedBusinessNameFiling);
       
@@ -88,7 +88,7 @@ bnFilingsRouter.post('/', async (req, res) => {
 
     const BNF = data.rows[0];
 
-    console.log(BNF);
+    //console.log(BNF);
 
     const newBusinessNameFiling = {
       id: BNF.id,
@@ -100,7 +100,7 @@ bnFilingsRouter.post('/', async (req, res) => {
       confirmation: BNF.confirmation
     }
 
-    console.log(newBusinessNameFiling);
+    //console.log(newBusinessNameFiling);
 
     res.status(200).json(newBusinessNameFiling);
       
