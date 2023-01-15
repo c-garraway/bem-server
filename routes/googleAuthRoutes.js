@@ -42,7 +42,7 @@ googleRouter.get('/failed', async (req, res) => {
 });
 
 
-googleRouter.get('/', checkAuthenticated, passport.authenticate('google', { 
+googleRouter.get('/', passport.authenticate('google', { 
     scope: ['profile', 'email'] })
 );
 
