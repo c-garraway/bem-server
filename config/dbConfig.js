@@ -1,6 +1,10 @@
 require('dotenv').config();
+const pg = require('pg');
+const { Pool } = pg;
 
-const { Pool } = require('pg');
+pg.types.setTypeParser(1082, function(stringValue) {
+    return stringValue;  //1082 for date type
+  });
 
 const isProduction = process.env.NODE_ENV === 'production';
 

@@ -3,20 +3,58 @@ const passport = require('passport');
 const { pool } = require('../config/dbConfig');
 const { checkAuthenticated, checkNotAuthenticated } = require('../utilities/utility')
 
-//TODO: create Class without need to import passport
-
 const googleRouter = express.Router();
+
+googleRouter.post('/logout', (req, res) => {
+    req.logout();
+    res.redirect("http://localhost:3000/main");
+});
+
+googleRouter.get('/getUser', async (req, res) => {
+    const user = req.user;
+    const email = user?._json.email;
+
+    if(req.user) {
+        try {
+            const data = await pool.query('SELECT id, email, firstname, lastname, companyname, avatar FROM users WHERE email = $1', [email]); 
+        
+            if (data.rows.length === 0) {
+            return res.status(404).json({message: 'Entity Not Found'});
+            };
+
+            const user = data.rows[0];
+        
+            res.status(200).send(user);
+            
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({message: error});
+        }
+    }
+});
+
+googleRouter.get('/failed', async (req, res) => {
+    
+    res.status(401).json({
+        success: false,
+        message: "failed"
+    });    
+});
+
 
 googleRouter.get('/', checkAuthenticated, passport.authenticate('google', { 
     scope: ['profile', 'email'] })
 );
 
 googleRouter.get('/callback', 
-    passport.authenticate('google', { failureRedirect: '/login' }),
+    passport.authenticate('google', { 
+        failureRedirect: '/failed', 
+    }),
     function(req, res) {
         // Successful authentication, redirect home.
-        console.log('Login Success');
+        //console.log('Login Success');
         const gUser = req.user._json;
+        //console.log(gUser);
 
         // check for user in database
         pool.query(
@@ -30,20 +68,18 @@ googleRouter.get('/callback',
                 if(googleUser === undefined || googleUser === null ) {
                     //console.log('user is undefined')
                     pool.query(
-                        'INSERT INTO users (name, email, useroauthid) VALUES ($1, $2, $3)', [gUser.name, gUser.email, gUser.sub], (err, results) => {
+                        'INSERT INTO users (firstname, lastname, email, useroauthid, avatar) VALUES ($1, $2, $3, $4, $5)', [gUser.given_name, gUser.family_name, gUser.email, gUser.sub, gUser.picture], (err, results) => {
                             if(err) {
                                 throw err;
                             }
-
-                            res.redirect('/users/dashboard');
-
+                            res.redirect("http://localhost:3000/main");
+                            
                         }
                     );
 
                 } else {
-                    //console.log('user is in the database')
-                    res.redirect('/users/dashboard');
-
+                    res.redirect("http://localhost:3000/main");
+                    
                 }
             }
         )
