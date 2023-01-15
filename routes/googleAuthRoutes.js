@@ -51,8 +51,6 @@ googleRouter.get('/callback',
         failureRedirect: '/failed', 
     }),
     function(req, res) {
-        // Successful authentication, redirect home.
-        //console.log('Login Success');
         const gUser = req.user._json;
         //console.log(gUser);
 
