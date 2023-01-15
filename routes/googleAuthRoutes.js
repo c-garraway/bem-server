@@ -10,7 +10,7 @@ googleRouter.post('/logout', (req, res) => {
     res.redirect(process.env.CLIENT_URL);
 });
 
-googleRouter.get('/getUser', async (req, res) => {
+googleRouter.get('/success', async (req, res) => {
     const user = req.user;
     const email = user?._json.email;
 
