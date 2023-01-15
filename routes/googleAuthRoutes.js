@@ -7,7 +7,7 @@ const googleRouter = express.Router();
 
 googleRouter.post('/logout', (req, res) => {
     req.logout();
-    res.redirect("http://localhost:3000/main");
+    res.redirect(process.env.CLIENT_URL);
 });
 
 googleRouter.get('/getUser', async (req, res) => {
@@ -70,13 +70,13 @@ googleRouter.get('/callback',
                             if(err) {
                                 throw err;
                             }
-                            res.redirect("http://localhost:3000/main");
+                            res.redirect(process.env.CLIENT_URL);
                             
                         }
                     );
 
                 } else {
-                    res.redirect("http://localhost:3000/main");
+                    res.redirect(process.env.CLIENT_URL);
                     
                 }
             }
