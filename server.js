@@ -107,6 +107,7 @@ app.use(session({
      } // 24 hours
 }));
 
+app.enable('trust proxy');
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(helmet());
