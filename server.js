@@ -133,7 +133,6 @@ const cFilingsRouter = require('./routes/cFilingsRoutes');
 app.use('/cf', cFilingsRouter);
 
 const cjRouter = require('./routes/cjRoutes');
-const { default: helmet } = require('helmet');
 app.use('/cj', cjRouter);
 
 app.listen(PORT, ()=>{

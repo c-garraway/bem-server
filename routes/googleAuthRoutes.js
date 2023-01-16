@@ -30,8 +30,8 @@ googleRouter.get('/success', async (req, res) => {
             console.error(error);
             res.status(500).json({message: error});
         }
-    }
-    res.status(404).json({message: 'User Not Found'});
+    } else {
+    res.status(404).json({message: 'User Not Found'});}
 });
 
 googleRouter.get('/failed', async (req, res) => {
