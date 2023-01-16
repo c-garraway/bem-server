@@ -4,12 +4,13 @@ const app = express();
 const { pool, connectionString } = require('./config/dbConfig')
 const bcrypt = require('bcrypt');
 const session = require('express-session');
-const flash = require('express-flash');
+//const flash = require('express-flash');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 const cors = require('cors');
 //const morgan = require('morgan');
+const helmet = require('helmet');
 
 const PORT = process.env.EXPRESS_PORT || 4000;
 
@@ -108,7 +109,7 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(flash());
+app.use(helmet());
 
 const googleRouter = require('./routes/googleAuthRoutes');
 app.use('/google', googleRouter);

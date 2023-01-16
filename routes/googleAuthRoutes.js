@@ -19,7 +19,7 @@ googleRouter.get('/success', async (req, res) => {
             const data = await pool.query('SELECT id, email, firstname, lastname, companyname, avatar FROM users WHERE email = $1', [email]); 
         
             if (data.rows.length === 0) {
-            return res.status(404).json({message: 'Entity Not Found'});
+            return res.status(404).json({message: 'User Info Not Found'});
             };
 
             const user = data.rows[0];
@@ -30,8 +30,8 @@ googleRouter.get('/success', async (req, res) => {
             console.error(error);
             res.status(500).json({message: error});
         }
-    }
-    res.status(404).json({message: 'User Not Found'});
+    } else {
+    res.status(404).json({message: 'User Not Found'});}
 });
 
 googleRouter.get('/failed', async (req, res) => {
