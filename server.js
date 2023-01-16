@@ -100,9 +100,9 @@ app.use(session({
     saveUninitialized: false,
     resave: false,
     cookie: { 
-        secure: false,
-        httpOnly: false,
-        sameSite: false,
+        secure: process.env.NODE_ENV === 'development' ? false : true,
+        httpOnly: process.env.NODE_ENV === 'development' ? false : true,
+        sameSite: process.env.NODE_ENV === 'development' ? false : 'none',
         maxAge: 24 * 60 * 60 * 1000
      } // 24 hours
 }));
