@@ -1,15 +1,13 @@
 const express = require('express');
 const app = express();
-//const cookieSession = require('cookie-session');
 const { pool, connectionString } = require('./config/dbConfig')
 const bcrypt = require('bcrypt');
 const session = require('express-session');
-//const flash = require('express-flash');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 const cors = require('cors');
-//const morgan = require('morgan');
+const morgan = require('morgan');
 const helmet = require('helmet');
 
 const PORT = process.env.EXPRESS_PORT || 4000;
@@ -81,12 +79,8 @@ app.use(cors({
     methods: "GET, POST, PUT, DELETE",
     credentials: true,
 }));
-//app.use(morgan('tiny'))
-/* app.use(cookieSession({
-    name: 'session',
-    keys: ['test'],
-    maxAge: 24 * 60 * 60 * 1000
-})) */
+app.use(morgan('tiny'))
+
 const conObject = {
     connectionString,
     //ssl: { rejectUnauthorized: false }
