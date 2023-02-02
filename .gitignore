@@ -1,3 +1,6 @@
 /node_modules
 /buildInfo
 .env
+.dockerignore
+Dockerfile
+docker-compose.yaml
