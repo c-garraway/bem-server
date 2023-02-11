@@ -13,7 +13,7 @@ usersRouter.post('/login', checkAuthenticated, passport.authenticate('local',  {
 });
 
 usersRouter.get('/fail', function(req, res){
-    res.status(401).json({message: 'Invalid Credentials'});
+    res.status(401).json({message: 'Invalid Credentials', status: 'error'});
 });
 
 usersRouter.post('/logout', checkNotAuthenticated, function(req, res, next){
@@ -32,7 +32,7 @@ usersRouter.get('/getUser', checkNotAuthenticated, async (req, res) => {
             const data = await pool.query('SELECT id, email, firstname, lastname, companyname, avatar FROM users WHERE email = $1', [email]); 
         
             if (data.rows.length === 0) {
-            return res.status(404).json({message: 'User Info Not Found'});
+            return res.status(404).json({message: 'User Info Not Found', status: 'error'});
             };
 
             const user = data.rows[0];
@@ -44,7 +44,7 @@ usersRouter.get('/getUser', checkNotAuthenticated, async (req, res) => {
             res.status(500).send({message: error});
         }
     } else {
-        res.status(404).json({message: 'User Not Found'});}
+        res.status(404).json({message: 'User Not Found', status: 'error'});}
 });
 
 usersRouter.post('/register', async (req, res) => {

@@ -1,6 +1,6 @@
 function checkAuthenticated(req, res, next){
     if(req.isAuthenticated()){
-        res.status(401).json({message: 'Already logged in'});
+        res.status(401).json({message: 'Already logged in', status: 'error'});
         return;
     }
     next();
