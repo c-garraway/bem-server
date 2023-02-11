@@ -4,7 +4,7 @@ const { pool } = require('../config/dbConfig')
 
 const dORouter = express.Router();
 
-dORouter.get('/:id', async (req, res) => {
+dORouter.get('/:id', checkNotAuthenticated, async (req, res) => {
   const entity = parseInt(req.params.id)
 
   try {
@@ -41,7 +41,7 @@ dORouter.get('/:id', async (req, res) => {
   }
 });
 
-dORouter.put('/', async (req, res) => {
+dORouter.put('/', checkNotAuthenticated, async (req, res) => {
   const { entity, name, position, status, startDate, address, phone, email, endDate, id } = req.body;
 
   try {
@@ -80,7 +80,7 @@ dORouter.put('/', async (req, res) => {
   }
 });
 
-dORouter.post('/', async (req, res) => {
+dORouter.post('/', checkNotAuthenticated, async (req, res) => {
   const { entity, name, position, status, startDate, address, phone, email, endDate } = req.body;
 
   try {

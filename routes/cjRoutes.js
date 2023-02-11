@@ -4,7 +4,7 @@ const { pool } = require('../config/dbConfig')
 
 const cjRouter = express.Router();
 
-cjRouter.get('/:id', async (req, res) => {
+cjRouter.get('/:id', checkNotAuthenticated, async (req, res) => {
   const entity = parseInt(req.params.id)
 
   try {
@@ -37,7 +37,7 @@ cjRouter.get('/:id', async (req, res) => {
   }
 });
 
-cjRouter.put('/', async (req, res) => {
+cjRouter.put('/', checkNotAuthenticated, async (req, res) => {
   const { entity, jurisdiction, status, startDate, endDate, id } = req.body;
 
   try {
@@ -72,7 +72,7 @@ cjRouter.put('/', async (req, res) => {
   }
 });
 
-cjRouter.post('/', async (req, res) => {
+cjRouter.post('/', checkNotAuthenticated, async (req, res) => {
   const { entity, jurisdiction, status, startDate, endDate} = req.body;
 
   try {

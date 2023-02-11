@@ -4,7 +4,7 @@ const { pool } = require('../config/dbConfig')
 
 const cFilingsRouter = express.Router();
 
-cFilingsRouter.get('/:id', async (req, res) => {
+cFilingsRouter.get('/:id', checkNotAuthenticated, async (req, res) => {
   const entity = parseInt(req.params.id)
 
   try {
@@ -37,7 +37,7 @@ cFilingsRouter.get('/:id', async (req, res) => {
   }
 });
 
-cFilingsRouter.put('/', async (req, res) => {
+cFilingsRouter.put('/', checkNotAuthenticated, async (req, res) => {
   const { entity, jurisdiction, subName, dueDate, confirmation, id } = req.body;
 
   try {
@@ -72,7 +72,7 @@ cFilingsRouter.put('/', async (req, res) => {
   }
 });
 
-cFilingsRouter.post('/', async (req, res) => {
+cFilingsRouter.post('/', checkNotAuthenticated, async (req, res) => {
   const { entity, jurisdiction, subName, dueDate, confirmation} = req.body;
 
   try {

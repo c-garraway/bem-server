@@ -106,8 +106,8 @@ app.use(helmet());
 const googleRouter = require('./routes/googleAuthRoutes');
 app.use('/google', googleRouter);
 
-const usersRouter = require('./routes/usersRoutes');
-app.use('/users', usersRouter);
+const authRouter = require('./routes/authRoutes');
+app.use('/auth', authRouter);
 
 const entityRouter = require('./routes/entityRoutes');
 app.use('/entities', entityRouter);
