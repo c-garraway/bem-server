@@ -22,10 +22,9 @@ This full stack web development project was built with the following technologie
 
 ## Self Hosted
 
-- Host: [Linode](https://www.linode.com/) cloud VM
-- Containers: [Docker](https://www.docker.com/)
-- Web Server - Proxy: [NGINX](https://www.nginx.com/)
-- Certificates: [Let's Encrypt](https://letsencrypt.org/) via [certbot](https://certbot.eff.org/)
+## Hosting Services
 
-This is a portfolio project, built as a part of my Full Stack Web Development training course.
+Self Hosted on a [Linode](https://www.linode.com/) cloud VM in [Docker](https://www.docker.com/) containers.
+
+`This is a portfolio project, built as a part of my Full Stack Web Development training course.`
 
