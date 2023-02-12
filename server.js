@@ -103,9 +103,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(helmet());
 
-const googleRouter = require('./routes/googleAuthRoutes');
-app.use('/google', googleRouter);
-
 const authRouter = require('./routes/authRoutes');
 app.use('/auth', authRouter);
 

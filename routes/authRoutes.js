@@ -4,28 +4,28 @@ const { checkAuthenticated, checkNotAuthenticated } = require('../utilities/util
 const { pool } = require('../config/dbConfig')
 const bcrypt = require('bcrypt');
 
-const usersRouter = express.Router();
+const authRouter = express.Router();
 
 
 
-usersRouter.post('/login', checkAuthenticated, passport.authenticate('local',  { failureRedirect: "fail" }), (req, res) =>{ 
+authRouter.post('/login', checkAuthenticated, passport.authenticate('local',  { failureRedirect: "fail" }), (req, res) =>{ 
     res.status(200).json({message: 'You have logged in successfully'});
 });
 
-usersRouter.get('/fail', function(req, res){
+authRouter.get('/fail', function(req, res){
     res.status(401).json({message: 'Invalid Credentials', status: 'error'});
 });
 
-usersRouter.post('/logout', checkNotAuthenticated, function(req, res, next){
+authRouter.post('/logout', checkNotAuthenticated, function(req, res, next){
     req.logout(function(err) {
       if (err) { return next(err); }
       res.status(200).json({message: 'You have logged out'});
     });
 });
 
-usersRouter.get('/getUser', checkNotAuthenticated, async (req, res) => {
+authRouter.get('/getUser', checkNotAuthenticated, async (req, res) => {
     const user = req.session.passport.user;
-    const email = user.email;
+    const email = user?.email ? user?.email : user?._json.email;
 
     if(req.user) {
         try {
@@ -47,7 +47,7 @@ usersRouter.get('/getUser', checkNotAuthenticated, async (req, res) => {
         res.status(404).json({message: 'User Not Found', status: 'error'});}
 });
 
-usersRouter.post('/register', async (req, res) => {
+authRouter.post('/register', async (req, res) => {
     let { email, password, password2 } = req.body;
 
     let errors = [];
@@ -93,7 +93,7 @@ usersRouter.post('/register', async (req, res) => {
 
 });
 
-usersRouter.put('/addProfile', async (req, res) => {
+authRouter.put('/addProfile', async (req, res) => {
     let { email, firstName, lastName, companyName } = req.body;
 
     let errors = [];
@@ -127,4 +127,47 @@ usersRouter.put('/addProfile', async (req, res) => {
 
 });
 
-module.exports = usersRouter;
+
+// GOOGLE AUTH
+authRouter.get('/', passport.authenticate('google', { 
+    scope: ['profile', 'email'] })
+);
+
+authRouter.get('/callback', 
+    passport.authenticate('google', { 
+        failureRedirect: 'fail', 
+    }),
+    function(req, res) {
+        const gUser = req.user._json;
+
+        // check for user in database
+        pool.query(
+            'SELECT * FROM users WHERE userOAuthID = $1', [gUser.sub], (err, results) => {
+                if (err) {
+                    throw err;
+                }
+
+                const googleUser = results.rows[0];
+
+                if(googleUser === undefined || googleUser === null ) {
+                    pool.query(
+                        'INSERT INTO users (firstname, lastname, email, useroauthid, avatar) VALUES ($1, $2, $3, $4, $5)', [gUser.given_name, gUser.family_name, gUser.email, gUser.sub, gUser.picture], (err, results) => {
+                            if(err) {
+                                throw err;
+                            }
+                            res.redirect(process.env.CLIENT_URL);
+                            
+                        }
+                    );
+
+                } else {
+                    res.redirect(process.env.CLIENT_URL);
+                    
+                }
+            }
+        )
+    }
+);
+
+
+module.exports = authRouter;
