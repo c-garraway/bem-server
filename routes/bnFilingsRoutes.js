@@ -11,7 +11,7 @@ bnFilingsRouter.get('/:id', checkNotAuthenticated, async (req, res) => {
     const data = await pool.query('SELECT * FROM business_name_filings WHERE entity = $1 ORDER BY id ASC', [entity]); 
 
     if (data.rows.length === 0) {
-      return res.status(404).json({message: 'Business Name Filings Not Found'});
+      return res.status(200).json({message: 'Business Name Filings Not Found'});
     };
 
     const rawBusinessNameFilings = data.rows;

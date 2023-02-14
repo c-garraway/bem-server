@@ -11,7 +11,7 @@ cjRouter.get('/:id', checkNotAuthenticated, async (req, res) => {
     const data = await pool.query('SELECT * FROM corporate_jurisdictions WHERE entity = $1 ORDER BY id ASC', [entity]); 
 
     if (data.rows.length === 0) {
-      return res.status(404).json({message: 'Corporate Jurisdictions Not Found'});
+      return res.status(200).json({message: 'Corporate Jurisdictions Not Found'});
     };
 
     const rawCorporateJurisdictions = data.rows;

@@ -80,11 +80,11 @@ entityRouter.put('/:id', checkNotAuthenticated, checkUserParam, async (req, res)
 
 entityRouter.post('/:id', checkNotAuthenticated, checkUserParam, async (req, res) => {
     const userID = parseInt(req.params.id)
-    const { name, address, date_created, status, corpID } = req.body;
+    const { name, address, dateCreated, status, corpID } = req.body;
 
     try {
         const data = await pool.query(
-            'INSERT INTO entities (user_id, name, address, date_created, status, corp_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [userID, name, address, date_created, status, corpID]
+            'INSERT INTO entities (user_id, name, address, date_created, status, corp_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [userID, name, address, dateCreated, status, corpID]
             );
     
         if (data.rows.length === 0) {

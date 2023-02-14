@@ -18,19 +18,23 @@ function checkNotAuthenticated(req, res, next){
 async function checkUserParam(req, res, next){
     const userID = parseInt(req.params.id).toString()
     const requestSessionID = req.session.passport.user.id
-
+    console.log(userID, requestSessionID)
     if(userID === requestSessionID){
         return next();
     } else {
         try {
             const data = await pool.query('SELECT id FROM users WHERE useroauthid = $1', [requestSessionID]); 
+            //console.log(data)
         
             if (data.rows.length === 0) {
-            return res.status(404).json({message: 'User Info Not Found', status: 'error'});
+            return res.status(401).json({message: 'Not authorized to perform transaction', status: 'error'});
             };
+            //console.log('I am here 2')
 
             const user = data.rows[0];
+            console.log(userID, user.id)
             if(userID === user.id) {
+                //console.log('I am here 3')
                 next();
             }
             return;
@@ -39,8 +43,7 @@ async function checkUserParam(req, res, next){
             res.status(500).send({message: error});
         }
     }
-    
-    res.status(401).json({message: 'Not authorized to perform transaction', status: 'error'});
+    //res.status(401).json({message: 'Not authorized to perform transaction', status: 'error'});
 }
 
 /* function checkUserBody(req, res, next){
