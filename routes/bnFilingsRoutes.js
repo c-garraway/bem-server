@@ -4,14 +4,14 @@ const { pool } = require('../config/dbConfig')
 
 const bnFilingsRouter = express.Router();
 
-bnFilingsRouter.get('/:id', async (req, res) => {
+bnFilingsRouter.get('/:id', checkNotAuthenticated, async (req, res) => {
   const entity = parseInt(req.params.id)
 
   try {
     const data = await pool.query('SELECT * FROM business_name_filings WHERE entity = $1 ORDER BY id ASC', [entity]); 
 
     if (data.rows.length === 0) {
-      return res.status(404).json({message: 'Business Name Filings Not Found'});
+      return res.status(200).json({message: 'Business Name Filings Not Found'});
     };
 
     const rawBusinessNameFilings = data.rows;
@@ -38,7 +38,7 @@ bnFilingsRouter.get('/:id', async (req, res) => {
   }
 });
 
-bnFilingsRouter.put('/', async (req, res) => {
+bnFilingsRouter.put('/', checkNotAuthenticated, async (req, res) => {
   const { entity, businessName, jurisdiction, subName, dueDate, confirmation, id } = req.body;
 
   try {
@@ -74,7 +74,7 @@ bnFilingsRouter.put('/', async (req, res) => {
   }
 });
 
-bnFilingsRouter.post('/', async (req, res) => {
+bnFilingsRouter.post('/', checkNotAuthenticated, async (req, res) => {
   const { entity, businessName, jurisdiction, subName, dueDate, confirmation} = req.body;
 
   try {

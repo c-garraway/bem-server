@@ -4,14 +4,14 @@ const { pool } = require('../config/dbConfig')
 
 const bnRouter = express.Router();
 
-bnRouter.get('/:id', async (req, res) => {
+bnRouter.get('/:id', checkNotAuthenticated, async (req, res) => {
   const entity = parseInt(req.params.id)
 
   try {
     const data = await pool.query('SELECT * FROM business_names WHERE entity = $1 ORDER BY id ASC', [entity]); 
 
     if (data.rows.length === 0) {
-      return res.status(404).json({message: 'Business Names Not Found'});
+      return res.status(200).json({message: 'Business Names Not Found'});
     };
 
     const rawBusinessNames = data.rows;
@@ -39,7 +39,7 @@ bnRouter.get('/:id', async (req, res) => {
   }
 });
 
-bnRouter.put('/', async (req, res) => {
+bnRouter.put('/', checkNotAuthenticated, async (req, res) => {
   const { entity, businessName, jurisdiction, address, creationDate, status, closeDate, id } = req.body;
 
   try {
@@ -77,7 +77,7 @@ bnRouter.put('/', async (req, res) => {
   }
 });
 
-bnRouter.post('/', async (req, res) => {
+bnRouter.post('/', checkNotAuthenticated, async (req, res) => {
   const { entity, businessName, jurisdiction, address, creationDate, status, closeDate} = req.body;
 
   try {

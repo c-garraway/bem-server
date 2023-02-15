@@ -20,8 +20,6 @@ This full stack web development project was built with the following technologie
 ## Client Repository
 - React PWA Client: [GitHub Repository](https://github.com/c-garraway/bem-client)
 
-## Self Hosted
-
 ## Hosting Services
 
 Self Hosted on a [Linode](https://www.linode.com/) cloud VM in [Docker](https://www.docker.com/) containers.

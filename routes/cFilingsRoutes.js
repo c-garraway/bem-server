@@ -4,14 +4,14 @@ const { pool } = require('../config/dbConfig')
 
 const cFilingsRouter = express.Router();
 
-cFilingsRouter.get('/:id', async (req, res) => {
+cFilingsRouter.get('/:id', checkNotAuthenticated, async (req, res) => {
   const entity = parseInt(req.params.id)
 
   try {
     const data = await pool.query('SELECT * FROM corporate_filings WHERE entity = $1 ORDER BY id ASC', [entity]); 
 
     if (data.rows.length === 0) {
-      return res.status(404).json({message: 'Corporate Filings Not Found'});
+      return res.status(200).json({message: 'Corporate Filings Not Found'});
     };
 
     const rawCorporateFilings = data.rows;
@@ -37,7 +37,7 @@ cFilingsRouter.get('/:id', async (req, res) => {
   }
 });
 
-cFilingsRouter.put('/', async (req, res) => {
+cFilingsRouter.put('/', checkNotAuthenticated, async (req, res) => {
   const { entity, jurisdiction, subName, dueDate, confirmation, id } = req.body;
 
   try {
@@ -72,7 +72,7 @@ cFilingsRouter.put('/', async (req, res) => {
   }
 });
 
-cFilingsRouter.post('/', async (req, res) => {
+cFilingsRouter.post('/', checkNotAuthenticated, async (req, res) => {
   const { entity, jurisdiction, subName, dueDate, confirmation} = req.body;
 
   try {

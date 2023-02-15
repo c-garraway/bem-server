@@ -4,14 +4,14 @@ const { pool } = require('../config/dbConfig')
 
 const dORouter = express.Router();
 
-dORouter.get('/:id', async (req, res) => {
+dORouter.get('/:id', checkNotAuthenticated, async (req, res) => {
   const entity = parseInt(req.params.id)
 
   try {
     const data = await pool.query('SELECT * FROM directors_officers WHERE entity = $1 ORDER BY id ASC', [entity]); 
 
     if (data.rows.length === 0) {
-      return res.status(404).json({message: 'D&O\'s Not Found'});
+      return res.status(200).json({message: 'D&O\'s Not Found'});
     };
 
     const rawDO = data.rows;
@@ -41,7 +41,7 @@ dORouter.get('/:id', async (req, res) => {
   }
 });
 
-dORouter.put('/', async (req, res) => {
+dORouter.put('/', checkNotAuthenticated, async (req, res) => {
   const { entity, name, position, status, startDate, address, phone, email, endDate, id } = req.body;
 
   try {
@@ -80,7 +80,7 @@ dORouter.put('/', async (req, res) => {
   }
 });
 
-dORouter.post('/', async (req, res) => {
+dORouter.post('/', checkNotAuthenticated, async (req, res) => {
   const { entity, name, position, status, startDate, address, phone, email, endDate } = req.body;
 
   try {

@@ -7,7 +7,6 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 const cors = require('cors');
-//const morgan = require('morgan');
 const helmet = require('helmet');
 
 const PORT = process.env.EXPRESS_PORT || 4000;
@@ -44,7 +43,7 @@ const authenticateLocalUser = (email, password, done) => {
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALLBACK_URL
+    callbackURL: process.env.NODE_ENV === 'development' ? process.env.GOOGLE_CALLBACK_URL_DEV : process.env.GOOGLE_CALLBACK_URL
     },
     function(request, accessToken, refreshToken, profile, done) {
         return done(null, profile);
@@ -76,7 +75,11 @@ app.use(cors({
     methods: "GET, POST, PUT, DELETE",
     credentials: true,
 }));
-//app.use(morgan('tiny'))
+
+if(process.env.NODE_ENV === 'development') {
+    const morgan = require('morgan');
+    app.use(morgan('tiny'))
+}
 
 const conObject = {
     connectionString,
@@ -103,11 +106,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(helmet());
 
-const googleRouter = require('./routes/googleAuthRoutes');
-app.use('/google', googleRouter);
-
-const usersRouter = require('./routes/usersRoutes');
-app.use('/users', usersRouter);
+const authRouter = require('./routes/authRoutes');
+app.use('/auth', authRouter);
 
 const entityRouter = require('./routes/entityRoutes');
 app.use('/entities', entityRouter);

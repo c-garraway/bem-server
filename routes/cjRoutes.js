@@ -4,14 +4,14 @@ const { pool } = require('../config/dbConfig')
 
 const cjRouter = express.Router();
 
-cjRouter.get('/:id', async (req, res) => {
+cjRouter.get('/:id', checkNotAuthenticated, async (req, res) => {
   const entity = parseInt(req.params.id)
 
   try {
     const data = await pool.query('SELECT * FROM corporate_jurisdictions WHERE entity = $1 ORDER BY id ASC', [entity]); 
 
     if (data.rows.length === 0) {
-      return res.status(404).json({message: 'Corporate Jurisdictions Not Found'});
+      return res.status(200).json({message: 'Corporate Jurisdictions Not Found'});
     };
 
     const rawCorporateJurisdictions = data.rows;
@@ -37,7 +37,7 @@ cjRouter.get('/:id', async (req, res) => {
   }
 });
 
-cjRouter.put('/', async (req, res) => {
+cjRouter.put('/', checkNotAuthenticated, async (req, res) => {
   const { entity, jurisdiction, status, startDate, endDate, id } = req.body;
 
   try {
@@ -72,7 +72,7 @@ cjRouter.put('/', async (req, res) => {
   }
 });
 
-cjRouter.post('/', async (req, res) => {
+cjRouter.post('/', checkNotAuthenticated, async (req, res) => {
   const { entity, jurisdiction, status, startDate, endDate} = req.body;
 
   try {

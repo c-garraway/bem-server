@@ -1,50 +1,53 @@
 const express = require('express');
-const { checkAuthenticated, checkNotAuthenticated } = require('../utilities/utility')
+const { checkAuthenticated, checkNotAuthenticated, checkUserParam } = require('../utilities/utility')
 const { pool } = require('../config/dbConfig')
 
 const entityRouter = express.Router();
 
-entityRouter.get('/:id', async (req, res) => {
+entityRouter.get('/:id', checkNotAuthenticated, checkUserParam, async (req, res) => {
     const userID = parseInt(req.params.id)
+    //console.log(userID, requestSessionID);
 
     try {
-        const data = await pool.query('SELECT id, user_id, name, address, date_created, status, corp_id FROM entities WHERE user_id = $1 ORDER BY id ASC', [userID]); 
-    
-        if (data.rows.length === 0) {
-          return res.status(404).json({message: 'Entities Not Found'});
-        };
+      const data = await pool.query('SELECT id, user_id, name, address, date_created, status, corp_id FROM entities WHERE user_id = $1 ORDER BY id ASC', [userID]); 
+  
+      if (data.rows.length === 0) {
+        return res.status(404).json({message: 'Entities Not Found'});
+      };
 
-        const rawEntities = data.rows;
-        const entities = rawEntities.map( 
-          entity => {
-            return (
-              {
-                id: entity.id,
-                userID: entity.user_id,
-                name: entity.name,
-                address: entity.address,
-                dateCreated: entity.date_created,
-                status: entity.status,
-                corpID: entity.corp_id,
-                corporateJurisdictions: [],
-                corporateFilings: [],
-                dO: [],
-                businessNames: [],
-                businessNameFilings: []
-              }
-            )
-          }            
-        )
-        res.status(200).json(entities);
-        
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({message: error});
-    }
+      const rawEntities = data.rows;
+      const entities = rawEntities.map( 
+        entity => {
+          return (
+            {
+              id: entity.id,
+              userID: entity.user_id,
+              name: entity.name,
+              address: entity.address,
+              dateCreated: entity.date_created,
+              status: entity.status,
+              corpID: entity.corp_id,
+              corporateJurisdictions: [],
+              corporateFilings: [],
+              dO: [],
+              businessNames: [],
+              businessNameFilings: [],
+            }
+          )
+        }            
+      )
+      res.status(200).json(entities);
+      
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({message: error});
+    } 
+    
 });
 
-entityRouter.put('/', async (req, res) => {
-    const { userID, name, address, dateCreated, status, corpID, id } = req.body;
+entityRouter.put('/:id', checkNotAuthenticated, checkUserParam, async (req, res) => {
+    const userID = parseInt(req.params.id)
+    const { name, address, dateCreated, status, corpID, id } = req.body;
 
     try {
         const data = await pool.query(
@@ -75,12 +78,13 @@ entityRouter.put('/', async (req, res) => {
       }
 });
 
-entityRouter.post('/', async (req, res) => {
-    const { userID, name, address, date_created, status, corpID } = req.body;
+entityRouter.post('/:id', checkNotAuthenticated, checkUserParam, async (req, res) => {
+    const userID = parseInt(req.params.id)
+    const { name, address, dateCreated, status, corpID } = req.body;
 
     try {
         const data = await pool.query(
-            'INSERT INTO entities (user_id, name, address, date_created, status, corp_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [userID, name, address, date_created, status, corpID]
+            'INSERT INTO entities (user_id, name, address, date_created, status, corp_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [userID, name, address, dateCreated, status, corpID]
             );
     
         if (data.rows.length === 0) {

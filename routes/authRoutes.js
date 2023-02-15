@@ -4,22 +4,35 @@ const { checkAuthenticated, checkNotAuthenticated } = require('../utilities/util
 const { pool } = require('../config/dbConfig')
 const bcrypt = require('bcrypt');
 
-const usersRouter = express.Router();
+const authRouter = express.Router();
 
 
-//Not currently used
-usersRouter.get('/getUser', async (req, res) => {
-    const user = req.user;
-    //const email = user.email;
-    console.log("getuser: " + user);
 
-    //console.log(req);
+authRouter.post('/login', checkAuthenticated, passport.authenticate('local',  { failureRedirect: "fail" }), (req, res) =>{ 
+    res.status(200).json({message: 'You have logged in successfully'});
+});
+
+authRouter.get('/fail', function(req, res){
+    res.status(401).json({message: 'Invalid Credentials', status: 'error'});
+});
+
+authRouter.post('/logout', checkNotAuthenticated, function(req, res, next){
+    req.logout(function(err) {
+      if (err) { return next(err); }
+      res.status(200).json({message: 'You have logged out'});
+    });
+});
+
+authRouter.get('/getUser', checkNotAuthenticated, async (req, res) => {
+    const user = req.session.passport.user;
+    const email = user?.email ? user?.email : user?._json.email;
+
     if(req.user) {
         try {
             const data = await pool.query('SELECT id, email, firstname, lastname, companyname, avatar FROM users WHERE email = $1', [email]); 
         
             if (data.rows.length === 0) {
-            return res.status(404).json({message: 'User Info Not Found'});
+            return res.status(404).json({message: 'User Info Not Found', status: 'error'});
             };
 
             const user = data.rows[0];
@@ -31,15 +44,10 @@ usersRouter.get('/getUser', async (req, res) => {
             res.status(500).send({message: error});
         }
     } else {
-        res.status(404).json({message: 'User Not Found'});}
+        res.status(404).json({message: 'User Not Found', status: 'error'});}
 });
 
-usersRouter.post('/logout', (req, res) => {
-    req.session.destroy();
-    res.status(200).json({message: 'You have logged out'});
-});
-
-usersRouter.post('/register', async (req, res) => {
+authRouter.post('/register', async (req, res) => {
     let { email, password, password2 } = req.body;
 
     let errors = [];
@@ -59,20 +67,13 @@ usersRouter.post('/register', async (req, res) => {
     if(errors.length > 0) {
         res.send({ errors })
     } else {
-        //Form validation has passed
-
         let hashedPassword = await bcrypt.hash(password, 10);
-        //console.log(hashedPassword);
-
         pool.query(
             'SELECT * FROM users WHERE email = $1', [email], 
             (err, results) => {
                 if(err) {
                     throw err;
                 }
-
-                //console.log(results.rows);
-
                 if(results.rows.length > 0) {
                     errors.push('Email already registered! ');
                     res.send({ errors })
@@ -82,7 +83,6 @@ usersRouter.post('/register', async (req, res) => {
                             if(err) {
                                 throw err;
                             }
-                            //console.log(results.rows);
                             res.send({email: email});
                         }
                     )
@@ -93,7 +93,7 @@ usersRouter.post('/register', async (req, res) => {
 
 });
 
-usersRouter.put('/addProfile', async (req, res) => {
+authRouter.put('/addProfile', async (req, res) => {
     let { email, firstName, lastName, companyName } = req.body;
 
     let errors = [];
@@ -105,20 +105,12 @@ usersRouter.put('/addProfile', async (req, res) => {
     if(errors.length > 0) {
         res.send({ errors })
     } else {
-        //Form validation has passed
-
         pool.query(
             'SELECT * FROM users WHERE email = $1', [email], 
             (err, results) => {
                 if(err) {
                     throw err;
-                }
-
-
-
-                 else {
-                    //console.log(results.rows);
-
+                } else {
                     pool.query(
                         'UPDATE users SET firstname = $1, lastname = $2, companyname = $3 WHERE email = $4 RETURNING *', [firstName, lastName, companyName, email], (err, results) => {
                             if(err) {
@@ -135,24 +127,47 @@ usersRouter.put('/addProfile', async (req, res) => {
 
 });
 
-usersRouter.post('/login', passport.authenticate('local',  { failureRedirect: "loginfail" }), (req, res) =>{ 
 
-    const account = (req.session.passport.user)
-    //console.log(account)
+// GOOGLE AUTH
+authRouter.get('/', passport.authenticate('google', { 
+    scope: ['profile', 'email'] })
+);
 
-    const response = {
-        id: account.id,
-        email: account.email,
-        firstName: account.firstname,
-        lastName: account.lastname,
-        companyName: account.companyname,
+authRouter.get('/callback', 
+    passport.authenticate('google', { 
+        failureRedirect: 'fail', 
+    }),
+    function(req, res) {
+        const gUser = req.user._json;
+
+        // check for user in database
+        pool.query(
+            'SELECT * FROM users WHERE userOAuthID = $1', [gUser.sub], (err, results) => {
+                if (err) {
+                    throw err;
+                }
+
+                const googleUser = results.rows[0];
+
+                if(googleUser === undefined || googleUser === null ) {
+                    pool.query(
+                        'INSERT INTO users (firstname, lastname, email, useroauthid, avatar) VALUES ($1, $2, $3, $4, $5)', [gUser.given_name, gUser.family_name, gUser.email, gUser.sub, gUser.picture], (err, results) => {
+                            if(err) {
+                                throw err;
+                            }
+                            res.redirect(process.env.CLIENT_URL);
+                            
+                        }
+                    );
+
+                } else {
+                    res.redirect(process.env.CLIENT_URL);
+                    
+                }
+            }
+        )
     }
-    //console.log(response)
-    res.send(response)
-});
+);
 
-usersRouter.get('/loginfail', function(req, res){
-    res.status(401).json({message: 'Invalid Credentials'});
-});
 
-module.exports = usersRouter;
+module.exports = authRouter;
