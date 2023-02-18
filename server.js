@@ -12,32 +12,35 @@ const helmet = require('helmet');
 const PORT = process.env.EXPRESS_PORT || 4000;
 
 const authenticateLocalUser = (email, password, done) => {
+
+    try {
+        pool.query(
+            'SELECT * FROM users WHERE email = $1', [email], (err, results) => {
+                if (err) {
+                    throw err;
+                }
     
-    pool.query(
-        'SELECT * FROM users WHERE email = $1', [email], (err, results) => {
-            if (err) {
-                throw err;
-            }
-
-            if(results.rows.length > 0) {
-                const user = results.rows[0];
-
-                bcrypt.compare(password, user.password, (err, isMatch) => {
-                    if(err) {
-                        throw err
-                    }
-                    if(isMatch) {
-                        return done(null, user);
-                    } else {
-                        return done(null, false, {message: 'Password is not correct'});
-                    }
-                });
-
-            } else {
-                return done(null, false, {message: 'Email is not registered'});
-            }
-        } 
-    );
+                if(results.rows.length > 0) {
+                    const user = results.rows[0];
+    
+                    bcrypt.compare(password, user.password, (err, isMatch) => {
+                        if(err) {
+                            throw err
+                        }
+                        if(isMatch) {
+                            return done(null, user);
+                        } else {
+                            return done(null, false);
+                        }
+                    });
+    
+                }
+            } 
+        );
+        
+    } catch (error) {
+        console.log(error)   
+    }
 };
 
 passport.use(new GoogleStrategy({
