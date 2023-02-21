@@ -130,7 +130,8 @@ authRouter.put('/addProfile', async (req, res) => {
 
 // GOOGLE AUTH
 authRouter.get('/', passport.authenticate('google', { 
-    scope: ['profile', 'email'] })
+    scope: ['profile', 'email'],
+    prompt: 'select_account' })
 );
 
 authRouter.get('/callback', 
